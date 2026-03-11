@@ -34,7 +34,6 @@ _Anything included in this section is considered a publicly known issue and is t
     - Fee on transfer tokens
     - Rebasing tokens
     - Non approve 0 tokens (e.g. BNB)
-    - …
 - Arbitrary deposits of auctioned assets to the auction contract during live auctions: the auction contract relies on balance reading to determine the available auctioned amount, but the amount approval to the CowSwap settlement contract is done at auction start (in performUpkeep). Therefore, if additional auctioned assets are deposited in the contract during an auction, those assets won’t be made available to the CowSwap solvers (only participants calling the bid function). This is acceptable since such deposits would not be performed by us and therefore be a net positive even if swapped at the lower end of the auction curve.
 - Asynchronous order updates on the CowSwap API: since auctions are relayed off-chain to the CowSwap API through periodic updates of limit orders:
     - Orders posted on the CowSwap order book will always have a higher price than the on-chain auction value (since the price decays per second). This may delay slightly the auction fills but this is an acceptable tradeoff as the on-chain price invariant can’t be broken.
@@ -57,7 +56,7 @@ This project includes an [Audit Catalyst](https://github.com/code-423n4/2026-03-
 
 ## Links
 
-- **Previous audits:**  TODO
+- **Previous audits:** N/A
 - **Documentation:** https://github.com/code-423n4/2026-03-chainlink/blob/main/payment_abstraction_v2.pdf
 - **Website:** https://chain.link/
 - **X/Twitter:** https://x.com/chainlink  
@@ -179,10 +178,6 @@ This project includes an [Audit Catalyst](https://github.com/code-423n4/2026-03-
 - Are there any user provided inputs that could result in unexpected behaviors/fund loss?
 - Are there any race conditions that could result in sustained DoS?
 - Are access controls implemented effectively to prevent unauthorized operations?
-
-## Main invariants
-
-TODO
 
 ## Trusted roles in the protocol
 

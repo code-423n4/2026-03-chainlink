@@ -1,0 +1,10 @@
+constructor.t.sol
+├─ when the auction contract is set to the zero address
+│  └─ it should revert
+└─ when the auction contract is not set to the zero address
+   ├─ it should set the auction contract
+   ├─ it should emit a AuctionContractSet event
+   ├─ when the receiver is not set to the zero address
+   │  ├─ it should set the receiver
+   │  └─ it should emit a ReceiverSet event
+   └─ it should return the correct type and version

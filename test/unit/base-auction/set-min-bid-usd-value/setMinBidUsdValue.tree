@@ -1,0 +1,11 @@
+setMinBidUsdValue.t.sol
+├─ when the caller does not have the ASSET_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the ASSET_ADMIN_ROLE
+   ├─ when the minimum bid USD value is zero
+   │  └─ it should revert
+   ├─ when the minimum bid USD value is the current value
+   │  └─ it should revert
+   └─ when the minimum bid USD value is different
+      ├─ it should emit a MinBidUsdValueSet event
+      └─ it should update the minimum bid USD value

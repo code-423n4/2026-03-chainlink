@@ -1,0 +1,13 @@
+./src/AuctionBidder.sol
+./src/BaseAuction.sol
+./src/Caller.sol
+./src/GPV2CompatibleAuction.sol
+./src/PriceManager.sol
+./src/WorkflowRouter.sol
+./src/interfaces/IAuctionBidder.sol
+./src/interfaces/IAuctionCallback.sol
+./src/interfaces/IBaseAuction.sol
+./src/interfaces/IGPV2Settlement.sol
+./src/interfaces/IPriceManager.sol
+./src/libraries/Errors.sol
+./src/libraries/Roles.sol

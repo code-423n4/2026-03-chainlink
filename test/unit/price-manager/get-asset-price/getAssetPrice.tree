@@ -1,0 +1,9 @@
+getAssetPrice.t.sol
+├─ when the asset streams price is not stale
+│  └─ it should return the streams price and timestamp
+└─ when the asset streams price is stale
+   ├─ when the data feed decimals is lower than 18
+   │  └─ it should scale the price up to 18 decimals
+   ├─ when the data feed decimals is greater than 18
+   │  └─ it should scale the price down to 18 decimals
+   └─ it should the scaled data feed price and timestamp

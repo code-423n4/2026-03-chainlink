@@ -1,0 +1,6 @@
+performUpkeep.t.sol
+├─ when the caller does not have the AUCTION_WORKER_ROLE
+│  └─ it should revert
+└─ when the caller has the AUCTION_WORKER_ROLE
+   └─ when an auction is eligible to start
+      └─ when the fee aggregator has an available asset balance

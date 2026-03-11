@@ -1,0 +1,12 @@
+setAssetOutReceiver.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller does have the DEFAULT_ADMIN_ROLE
+   ├─ when the asset out receiver is set to the zero address
+   │  └─ it should revert
+   └─ when the asset out receiver is not set to the zero address
+      ├─ when the asset out receiver is the same as the already configured one
+      │  └─ it should revert
+      └─ when the asset out receiver is different than the already configured one
+         ├─ it should set the asset out receiver
+         └─ it should emit a AssetReceiverSet event

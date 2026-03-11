@@ -1,0 +1,11 @@
+constructor.t.sol
+├─ when the cow protocol vault relayer is set to the zero address
+│  └─ it should revert
+└─ when the cow protocol vault relayer is not set to the zero address
+   ├─ when the cow protocol settlement contract is set to the zero address
+   │  └─ it should revert
+   └─ when the cow protocol settlement contract is not set to the zero address
+      ├─ it should set the cow protocol vault relayer
+      ├─ it should set the cow protocol settlement contract
+      ├─ it should emit a GPV2VaultRelayerSet event
+      └─ it should emit a GPV2SettlementSet event

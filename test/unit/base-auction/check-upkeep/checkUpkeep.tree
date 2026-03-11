@@ -1,0 +1,31 @@
+checkUpkeep.t.sol
+├─ given the contract is paused
+│  └─ it should revert
+└─ given the contract is not paused
+   ├─ given the asset out does not have configured asset params
+   │  └─ it should revert
+   └─ give the asset out has configured params
+      └─ given an auction is live
+         ├─ when the auction is ended
+         │  ├─ it should include the auctioned asset to the ended auction list
+         │  └─ when the asset out price is not valid
+         │     └─ it should return an empty eligible assets list
+         ├─ when the auction is not ended
+         │  └─ given the auctioned asset balance is zero
+         │     └─ it should include the auctioned asset to the ended auction list
+         └─ given an auction is not live
+            ├─ when an auctionable asset price is stale
+            │  └─ it should not include the auctionable asset to the eligible assets list
+            └─ when an auctionable asset price is not stale
+               ├─ given an auctionable asset's available balance USD value is greater or equal to the minimum auction size
+               │  └─ it should include the auctionable asset to the eligible assets list
+               ├─ when the eligible assets index is not equal to the allowlisted assets length
+               │  └─ it should update the eligible assets list length
+               ├─ when the ended auctions index is not equal to the allowlisted assets length
+               │  └─ it should updated the ended auctions list length
+               ├─ when both eligible assets and ended auctions list are empty
+               │  ├─ it should return false
+               │  └─ it should return an empty perform data
+               └─ when either eligible assets or ended auctions list is not empty
+                  ├─ it should return true
+                  └─ it should return the abi encoded lists

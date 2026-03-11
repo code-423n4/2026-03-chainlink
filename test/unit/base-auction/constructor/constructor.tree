@@ -1,0 +1,43 @@
+constructor.t.sol
+├─ when the admin is set to the zero address
+│  ├─ it should revert
+└─ when the admin is not set to the zero address
+   ├─ when the link token is set to the zero address
+   │  └─ it should revert
+   └─ when the link token is not set to the zero address
+      ├─ when the verifier proxy is set to zero address
+      │  └─ it should revert
+      └─ when the verifier proxy is not set to the zero address
+         ├─ when asset out is set to the zero address
+         │  └─ it should revert
+         └─ when the asset out is not set to the zero address
+            ├─ when asset out receiver is set to the zero address
+            │  └─ it should revert
+            └─ when asset out receiver is not set to the zero address
+               ├─ when the fee aggregator is set to the zero address
+               │  └─ it should revert
+               └─ when the fee aggregator is not set to the zero address
+                  ├─ when the maximum discount is set to zero
+                  │  └─ it should revert
+                  └─ when the maximum discount is not set to zero
+                     ├─ when the Cow Protocol Vault Relayer is set to the zero address
+                     │  └─ it should revert
+                     └─ when the Cow Protocol Vault Relayer is not set to the zero address
+                        ├─ when the Cow Protocol Settlement contract is set to the zero address
+                        │  └─ it should revert
+                        └─ when the Cow Protocol Settlement contract is not set to the zero address
+                           ├─ it should set the asset out
+                           ├─ it should emit the AssetOutSet event
+                           ├─ it should set the asset out receiver
+                           ├─ it should emit the AssetOutReceiverSet event
+                           ├─ it should set the fee aggregator
+                           ├─ it should emit the FeeAggregator set event
+                           ├─ it should return the correct type and version
+                           ├─ when the feeds infos are provided
+                           │  ├─ it should set feeds infos
+                           │  └─ it should emit FeedInfoUpdated events
+                           ├─ it should set the verifier proxy
+                           ├─ it should emit a VerifierProxySet event
+                           ├─ it should emit a MinPriceMultiplierSet event
+                           ├─ it should emit a GPV2VaultRelayerSetEvent
+                           └─ it should emit a GPV2SettlementSetEvent

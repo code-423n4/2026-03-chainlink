@@ -1,0 +1,51 @@
+isValidSignature.t.sol
+├─ given the contract is paused
+│  └─ it should revert
+└─ given the contract is not paused
+   ├─ given the bid function was entered
+   │  └─ it should revert
+   └─ given the bid function was not entered
+      ├─ when the order ID is invalid
+      │  └─ it should revert
+      └─ when the order ID is valid
+         ├─ when the auction is not valid (non allowlisted asset or auction not started)
+         │  └─ it should revert
+         └─ when the auction is valid
+            ├─ when the buy token is not the configured asset out token
+            │  └─ it should revert
+            └─ when the buy token is the configured asset out token
+              ├─ when the receiver is not the configured asset out receiver
+              │  └─ it should revert
+              └─ when the receiver is the configured asset out receiver
+                 ├─ when the sell amount is zero
+                 ├─ it should revert
+                 └─ when the sell amount is greater than zero
+                    ├─ when the sell amount is greater than the current Auction contract balance
+                    │  └─ it should revert
+                    └─ when the sell amount is lower or equal to the current balance Auction contract balance
+                       ├─ when the auction duration has elapsed
+                       │  └─ it should revert
+                       └─ when the auction duration has not elapsed
+                          ├─ when the computed buy amount is zero
+                          │  └─ it should revert
+                          └─ when the computed buy amount is greater than zero
+                             ├─ when the buy amount is lower than the auction price
+                             │  └─ it should revert
+                             └─ when the buy amount is greater than or equal to the auction price
+                                ├─ when the order is expired
+                                │  └─ it should revert
+                                └─ when the order is not expired
+                                   ├─ when the fee amount is greater than zero
+                                   ├─ it should revert
+                                   └─ when the fee amount is zero
+                                      ├─ when the order is not a sell order
+                                      │  └─ it should revert
+                                      └─ when the order is a sell order
+                                         ├─ when the order is not partially fillable
+                                         │  └─ it should revert
+                                         └─ when the order is partially fillable
+                                            ├─ when sell token balance mode is not ERC20
+                                            │  └─ it should revert
+                                            ├─ when buy token balance mode is not ERC20
+                                            │  └─ it should revert
+                                            └─ it should return the correct magic value

@@ -1,0 +1,15 @@
+setAuctionBidder.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the DEFAULT_ADMIN_ROLE
+   ├─ when the auction bidder is set to the zero address
+   │  └─ it should revert
+   └─ when the auction bidder is not set to the zero address
+      ├─ when the new auction bidder does not support the IAuctionBidder interface
+      │  └─ it should revert
+      └─ when the new auction bidder supports the IAuctionBidder interface
+         ├─ when the new auction bidder is the same address as the already configured one
+         │  └─ it should revert
+         └─ when the new auction bidder is different than the already configured one
+            ├─ it should set the new auction bidder
+            └─ it should emit a AuctionBidderSet event

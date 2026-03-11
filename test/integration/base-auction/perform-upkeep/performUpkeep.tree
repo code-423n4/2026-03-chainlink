@@ -1,0 +1,27 @@
+performUpkeep.t.sol
+├─ given the contract is paused
+│  └─ it should revert
+└─ given the contract is not paused
+   ├─ when the asset out params are not set
+   │  └─ it should revert
+   └─ when the asset out params are set
+      ├─ when there are eligible assets and the asset out price is not valid
+      │  └─ it should revert
+      └─ when there are eligible assets and the asset out price is valid
+         ├─ when an eligible asset params are not set
+         │  └─ it should revert
+         └─ when the eligible asset params are set
+            ├─ when the eligible asset has a live auction
+            │  └─ it should revert
+            └─ when the eligible asset does not have a live auction
+               ├─ when the eligible asset amount is below the minimum auction size
+               │  └─ it should revert
+               └─ when the eligible asset amount is above the minimum auction size
+                  ├─ when ending auctions with a stale asset out price
+                  │  └─ it should end the auction
+                  └─ when an auction is ended
+                     ├─ when the ended auction is not live
+                     │  └─ it should revert
+                     └─ when the ended auction is live
+                        └─ given the fee aggregator is set to the auction contract
+                           └─ it should only perform a single transfer of asset out to the receiver

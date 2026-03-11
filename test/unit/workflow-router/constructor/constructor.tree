@@ -1,0 +1,26 @@
+constructor.t.sol
+├─ when the auction contract is set to the zero address
+│  └─ it should revert
+└─ when the auction contract is not set to the zero address
+   ├─ when the auction contract does not support the IBaseAuction interface
+   │  └─ it should revert
+   └─ when the auction contract supports the IBaseAuction interface
+      ├─ when the auction contract does not support the IPriceManager interface
+      │  └─ it should revert
+      └─ when the auction contract supports the IPriceManager interface
+         ├─ when the auction bidder is set to the zero address
+         │  └─ it should revert
+         └─ when the auction bidder is not set to the zero address
+            ├─ when the auction bidder does not support the IAuctionBidder interface
+            ├─ it should revert
+            └─ when the auction bidder supports the IAuctionBidder interface
+               ├─ when there are workflow ids to be configured
+               │  ├─ when the workflow id is set to zero
+               │  │  └─ it should revert
+               │  └─ when the workflow id is not set to zero
+               │     ├─ it should set the workflow ids
+               │     └─ it should emit a WorkflowIdSet event
+               ├─ it should set the auction contract
+               ├─ it should emit an AuctionSet event
+               ├─ it should support the correct interfaces
+               └─ it should return the correct type and version

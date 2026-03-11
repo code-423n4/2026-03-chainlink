@@ -1,0 +1,5 @@
+{
+  "detectors_to_exclude": "conformance-to-solidity-naming-conventions,solc-version,block-timestamp,arbitrary-send-eth,arbitrary-send-erc20",
+  "filter_paths": "(node_modules|src/vendor|src/AuctionBidder.sol)",
+  "solc_remaps": "@chainlink=node_modules/chainlink @openzeppelin=node_modules/openzeppelin node_modules/@chainlink/:@openzeppelin/contracts@4.8.3/=node_modules/.pnpm/@openzeppelin+contracts@4.8.3/node_modules/@openzeppelin/contracts/"
+}

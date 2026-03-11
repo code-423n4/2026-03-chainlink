@@ -1,0 +1,59 @@
+applyFeedInfoUpdates.t.sol
+├─ when the caller does not have the ASSET_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the ASSET_ADMIN_ROLE
+   ├─ when both adds and removes lists are empty
+   │  └─ it should revert
+   └─ when either adds or removes lists are not empty
+      ├─ when the removes list is not empty
+      │  ├─ when the removed asset is the asset out and a live auction exists
+      │  │  └─ it should revert
+      │  └─ when the removed asset is not the asset out or no live auction exists
+      │     ├─ when the removed asset has a live auction
+      │     │  └─ it should revert
+      │     └─ when the removed asset does not have a live auction
+      │        ├─ when the removed feed id is not allowlisted
+      │        │  └─ it should revert
+      │        └─ when the removed feed id is allowlisted
+      │           ├─ it should remove the feed and emit an AssetRemovedFromAllowlist event
+      │           └─ it should add and remove feeds
+      └─ when the adds list is not empty
+         ├─ when the updated asset is the asset out and a live auction exists
+         │  └─ it should revert
+         └─ when the updated asset is not the asset out or no live auction exists
+            ├─ when the updated asset has a live auction
+            │  └─ it should revert
+            └─ when the updated asset does not have a live auction
+               ├─ when the added/updated feed info asset is the zero address
+               │  └─ it should revert
+               └─ when the added/updated feed info asset is not the zero address
+                  ├─ when the added/updated feed info data streams ID is zero and usd data feed is the zero address
+                  │  └─ it should revert
+                  └─ when the added/updated feed info data streams ID is not zero or usd data feed is not the zero address
+                     ├─ when the Data Streams feed ID is not zero
+                     │  ├─ when the set staleness threshold is zero
+                     │  │  └─ it should revert
+                     │  └─ when the set staleness threshold is not zero
+                     │     ├─ when the feed info decimals is zero
+                     │     │  └─ it should revert
+                     │     └─ when the feed info decimals is not zero
+                     │        ├─ when the feed version is not v3
+                     │        │  └─ it should revert
+                     │        └─ when the feed version is v3
+                     │           └─ when the feed ID is being rotated from another asset
+                     │              ├─ when the previous asset does not have a Data Feed configured
+                     │              │  └─ it should revert
+                     │              └─ when the previous asset does have a Data Feed configured
+                     │                 ├─ it should clean up the previous asset's Data Streams' state
+                     │                 └─ when the feed ID is being updated
+                     │                    └─ it should update the Data Streams feed ID to asset mapping
+                     ├─ when the asset is being added
+                     │  └─ it should emit an AssetAddedToAllowlist event
+                     ├─ when the asset is being updated
+                     │  └─ when the asset old Data Streams feed ID is different than the new one
+                     │     ├─ it should clear the old Data Streams feed ID to asset mapping
+                     │     └─ it should clear the old Data Streams price
+                     ├─ it should add new feeds and emit a FeedInfoUpdated event
+                     ├─ it should add new feeds and emit a FeedInfoUpdated event
+                     ├─ it should update existing feeds and emit a FeedInfoUpdated event
+                     └─ it should remove existing feeds and emit a FeedInfoRemoved event

@@ -1,0 +1,4 @@
+forge-std=node_modules/forge-std/src/
+node_modules/@chainlink/:@openzeppelin/contracts@4.8.3/=node_modules/.pnpm/@openzeppelin+contracts@4.8.3/node_modules/@openzeppelin/contracts/
+node_modules/@chainlink/:@openzeppelin/contracts@5.0.2/=node_modules/.pnpm/@openzeppelin+contracts@5.0.2/node_modules/@openzeppelin/contracts/
+@cowprotocol=src/vendor/@cowprotocol/contracts/src/contracts

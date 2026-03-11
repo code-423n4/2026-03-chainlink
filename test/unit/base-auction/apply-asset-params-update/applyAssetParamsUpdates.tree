@@ -1,0 +1,40 @@
+applyAssetParamsUpdate.t.sol
+├─ when the caller does not have the ASSET_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the ASSET_ADMIN_ROLE
+   ├─ when both adds and removes lists are empty
+   │  └─ it should revert
+   └─ when adds or removes lists are not empty
+      ├─ when the removes list is not empty
+      │  ├─ when the removed asset is the asset out and a live auction exists
+      │  │  └─ it should revert
+      │  └─ when the removed asset is not the asset out or no live auction exists
+      │     ├─ when the removed asset params are not set
+      │     │  └─ it should revert
+      │     └─ when the removed asset params are set
+      │        ├─ it should remove the asset from the allowlist
+      │        └─ it should emit an AssetParamsRemoved event
+      └─ when the adds list is not empty
+         ├─ when the updated asset is the asset out and a live auction exists
+         │  └─ it should revert
+         └─ when the updated asset is not the asset out or no live auction exists
+            ├─ when the added/updated asset is not allowlisted
+            │  └─ it should revert
+            └─ when the added/updated asset is allowlisted
+               ├─ when the asset params' decimals is different than the on-chain value
+               │  └─ it should revert
+               └─ when the asset params decimals is the same as the on-chain value
+                  ├─ when the asset params' minimum auction size is zero
+                  │  └─ it should revert
+                  └─ when the asset params' minimum auction size is not zero
+                     ├─ when the asset params' auction duration is zero
+                     │  └─ it should revert
+                     └─ when the asset params' auction duration is not zero
+                        ├─ when the asset params' ending price multiplier is lower than the max discount
+                        │  └─ it should revert
+                        └─ when the asset params' ending price multiplier is greater or equal to the max discount
+                           ├─ when the starting price multiplier is lower than the ending price multiplier
+                           │  └─ it should revert
+                           └─ when the starting price multiplier is greater or equal to the ending price multiplier
+                              ├─ it should update the asset params
+                              └─ it should emit an AssetParamsUpdated event

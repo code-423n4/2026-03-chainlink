@@ -1,0 +1,9 @@
+setReceiver.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the DEFAULT_ADMIN_ROLE
+   ├─ when the new receiver is the same value as the old receiver
+   │  └─ it should revert
+   └─ when the new receiver is not the same value as the old receiver
+      ├─ it should set the new receiver
+      └─ it should emit a ReceiverSet event

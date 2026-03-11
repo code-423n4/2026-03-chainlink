@@ -1,0 +1,20 @@
+transmit.t.sol
+├─ when the caller does not have the PRICE_ADMIN_ROLE
+├─ it should revert
+└─ when the caller has the PRICE_ADMIN_ROLE
+   ├─ when the unverified reports list is empty
+   ├─ it should revert
+   └─ when the unverified reports list is not empty
+      ├─ when the report's feed id is not allowlisted
+      │  └─ it should revert
+      └─ when the report's feed id is allowlisted
+         ├─ when the report's observation timestamp is older than the staleness threshold
+         │  └─ it should revert
+         └─ when the report's observation timestamp is more recent than the staleness threshold
+            ├─ when the report's scaled price is zero
+            │  └─ it should revert
+            └─ when the report's scaled price is not zero
+               ├─ when the verified report price is not 18 decimals
+               │  └─ it should scale the price to 18 decimals
+               ├─ it should set price info
+               └─ it should emit a PriceTransmitted event

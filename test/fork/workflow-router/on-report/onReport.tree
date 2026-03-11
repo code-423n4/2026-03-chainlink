@@ -1,0 +1,11 @@
+onReport.t.sol
+├─ when called by the price manager workflow
+│  ├─ it should correctly route streams reports to the auction contract's transmit function
+│  ├─ it should correctly verify streams report
+│  └─ it should update asset prices
+├─ when called by the auction manager workflow
+│  ├─ it should correctly route the perform data to the auction contract's performUpkeep function
+│  └─ it should start the auction
+└─ when called by the auction bidder workflow
+   ├─ it should correctly route the solution to the auction bidder's bid function
+   └─ it should bid on the auction

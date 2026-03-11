@@ -1,0 +1,28 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+/broadcast/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+.envrc
+*secrets.yaml
+
+# Coverage
+lcov.info
+coverage
+coverage.out
+
+node_modules
+coverage.json
+
+.DS_Store
+
+.idea
+
+olympix

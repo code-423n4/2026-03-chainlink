@@ -1,0 +1,19 @@
+setAssetOut.t.sol
+├─ when the caller does not have the ASSET_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the ASSET_ADMIN_ROLE
+   ├─ when an auction is live
+   │  └─ it should revert
+   └─ when no auctions are live
+      ├─ when an auction is live
+      │  └─ it should revert
+      └─ when no auctions are live
+         ├─ when the asset out address is set to the zero address
+         │  └─ it should revert
+         └─ when the asset out address is not set to the zero address
+            ├─ when the asset out is set to the same value as the existing one
+            │  └─ it should revert
+            └─ when the asset out is set to a different value than the existing one
+               ├─ it should set the asset out address
+               ├─ it clear the previous asset out params
+               └─ it should emit a AssetOutSet event

@@ -1,0 +1,3 @@
+transmit.t.sol
+├─ it should correctly verify streams report
+└─ it should update asset prices

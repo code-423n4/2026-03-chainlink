@@ -1,0 +1,16 @@
+setAuction.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+├─ when the caller does have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+├─ when the auction contract is set to the zero address
+│  └─ it should revert
+└─ when the auction contract is not set to the zero address
+   ├─ when the auction contract does not support the IBaseAuction interface
+   │  └─ it should revert
+   └─ when the auction contract supports the IBaseAuction interface
+      ├─ when the new auction contract is the same address as the one that is already configured
+      │  └─ it should revert
+      └─ when the new auction contract is different than the one already configured
+         ├─ it should set the new auction contract
+         └─ it should emit a AuctionContractSet event

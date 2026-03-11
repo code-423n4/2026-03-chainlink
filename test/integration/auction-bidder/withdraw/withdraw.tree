@@ -1,0 +1,8 @@
+withdraw.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the DEFAULT_ADMIN_ROLE
+   ├─ when the receiver is the zero address
+   │  └─ it should revert
+   └─ when the receiver is not the zero address
+      └─ it should withdraw the correct asset and amount to the correct address

@@ -1,0 +1,35 @@
+{
+  "name": "@chainlink/payment-abstraction-v2",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "forge test --isolate",
+    "test:coverage": "FOUNDRY_PROFILE=coverage forge coverage --report lcov && genhtml -o coverage lcov.info",
+    "snapshot": "FOUNDRY_PROFILE=snapshot forge snapshot --isolate",
+    "solhint": "solhint --max-warnings 0 \"./src/**/*.sol\" && solhint --max-warnings 0 --config .solhint-test.json \"./test/**/*.sol\" && go run ./tools/lint/lint.go",
+    "foundry": "foundryup --install v1.5.0",
+    "anvil": "anvil --port 8545 --chain-id 90000001"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@chainlink/contracts": "1.5.0",
+    "@chainlink/contracts-ccip": "1.6.4",
+    "@openzeppelin/contracts": "5.0.2",
+    "solady": "0.1.26"
+  },
+  "devDependencies": {
+    "@uniswap/swap-router-contracts": "1.3.1",
+    "@uniswap/v3-core": "1.0.1",
+    "forge-std": "github:foundry-rs/forge-std#1801b0541f4fda118a10798fd3486bb7051c5dd6",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
+    "solhint": "^6.0.3",
+    "solhint-plugin-chainlink-solidity": "git+https://github.com/smartcontractkit/chainlink-solhint-rules.git#v1.2.1"
+  },
+  "lint-staged": {
+    "*": "forge fmt"
+  }
+}

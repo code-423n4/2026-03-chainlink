@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
+pragma solidity >=0.7.6 <0.9.0;
+
+/// @title Gnosis Protocol v2 Authentication Interface
+/// @author Gnosis Developers
+interface GPv2Authentication {
+  /// @dev determines whether the provided address is an authenticated solver.
+  /// @param prospectiveSolver the address of prospective solver.
+  /// @return true when prospectiveSolver is an authenticated solver, otherwise false.
+  function isSolver(
+    address prospectiveSolver
+  ) external view returns (bool);
+
+  function manager() external returns (address);
+
+  /// This function is idempotent.
+  ///
+  /// @param solver The solver address to add.
+  function addSolver(
+    address solver
+  ) external;
+}

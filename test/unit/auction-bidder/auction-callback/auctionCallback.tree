@@ -1,0 +1,9 @@
+auctionCallback.t.sol
+├─ when the caller is not the Auction contract
+│  └─ it should revert
+└─ when the call is the auction contract
+   ├─ when the auction contract's caller is not the auction bidder contract
+   │  └─ it should revert
+   └─ when the auction contract's caller is the auction bidder contract
+      └─ when the callback data is empty
+         └─ it should revert

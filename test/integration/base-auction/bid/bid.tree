@@ -1,0 +1,26 @@
+bid.t.sol
+├─ given the contract is paused
+│  └─ it should revert
+└─ given the contract is not paused
+   ├─ when the function is reentered
+   │  └─ it should revert
+   └─ when the function is not reentered
+      ├─ when the auction has not started
+      │  └─ it should revert
+      └─ when the auction has started
+         ├─ when the auction has ended
+         │  └─ it should revert
+         └─ when the auction is live
+            ├─ when the computed amount of auctioned asset is zero
+            │  └─ it should revert
+            └─ when the computed amount of auctioned asset is greater than zero
+               ├─ it should transfer the auction asset to the receiver
+               ├─ when callback data is provided
+               │  ├─ when the callback to the receiver fails with return data
+               │  │  └─ it should revert and bubble up the receiver error message
+               │  └─ when the callback to the receiver fails without return data
+               │     └─ it should revert
+               ├─ it should transfer the asset out from the receiver to the Auction contract
+               ├─ it should emit an AuctionBidSettled event
+               └─ when there are no more asset to auction
+                  └─ it should emit an AuctionSettled event

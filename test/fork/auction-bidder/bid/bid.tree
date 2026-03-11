@@ -1,0 +1,11 @@
+solve.t.sol
+├─ given the contract is paused
+│  └─ it should revert
+└─ given the contract is not paused
+   ├─ when the caller does not have the AUCTION_BIDDER_ROLE
+   │  └─ it should revert
+   └─ when the caller has the AUCTION_BIDDER_ROLE
+      ├─ it should call the Auction contract bid function
+      ├─ it should successfully solve the bid
+      └─ when there is outstanding asset out balance after solving the bid
+         └─ it should transfer the oustanding asset out balance to the asset out receiver

@@ -1,0 +1,12 @@
+setWorkflowIds.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller does have the DEFAULT_ADMIN_ROLE
+   ├─ when the set workflow ID is zero
+   │  └─ it should revert
+   └─ when the set workflow ID is not zero
+      ├─ when the set workflow ID is the same as the one already configured
+      │  └─ it should revert
+      └─ when the set workflow ID is different than the one already configured
+         ├─ it should set the new workflow ID
+         └─ it should emit a WorkflowIdSetEvent

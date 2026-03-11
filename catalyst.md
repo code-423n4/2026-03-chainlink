@@ -1,4 +1,4 @@
-# Chainlink Payment Abstracion Audit Catalyst
+# Chainlink Payment Abstraction Audit Catalyst
 
 This audit catalyst was prepared by Zellic security researchers to accelerate competitive auditors' efficiency and effectiveness in contributing to the security of Chainlink payments in anticipation of the Code4rena competitive audit.
 

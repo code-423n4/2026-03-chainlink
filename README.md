@@ -53,7 +53,7 @@ The goal of Payment Abstraction V2 is to replace the current Payment Abstraction
 - Building a backward and forward compatible solution allowing to integrate with multiple liquidity venues.
 
 # Chainlink Payment Abstraction V2 Audit Catalyst
-This project includes an [Audit Catalyst](LINK TODO) prepared by [Zellic](https://www.zellic.io/). This is an essential read for accelerating your work as an auditor and using your time most effectively in contributing to the security of the project.
+This project includes an [Audit Catalyst](https://github.com/code-423n4/2026-03-chainlink/blob/main/catalyst.md) prepared by [Zellic](https://www.zellic.io/). This is an essential read for accelerating your work as an auditor and using your time most effectively in contributing to the security of the project.
 
 ## Links
 

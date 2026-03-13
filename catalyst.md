@@ -17,10 +17,9 @@ Auditing this protocol requires familiarity with some common EVM design patterns
 The protocol consists of several logical components that interact to implement automated auctioning.
 
 ### FeeAggregator
+*Note: This contract is not in scope for the Code4rena audit.*
 
 The FeeAggregator contract accumulates assets belonging to the protocol. It acts as the primary treasury holding contract for tokens awaiting liquidation. Assets may arrive through direct transfers, internal accounting systems, or cross-chain bridging. The contract exposes a privileged function allowing authorized swappers to move assets out of the aggregator for settlement.
-
-*Note: This contract is not in scope for the Code4rena audit.*
 
 ### BaseAuction
 
@@ -55,6 +54,10 @@ The lifecycle of assets in the protocol can be summarized as follows:
 ## Security Considerations
 
 The following issue classes are particularly relevant when auditing this system. Importantly, note that the roles assigned to automation infrastructure are considered trusted.
+
+### Asset custody and transfer privileges
+
+The Auction contract is able to pull tokens from the FeeAggregator in order to start auctions. It's also responsible for handling payouts to auction bidders and transferring the settlement token assetOut to the designated receiver address. Security of this contract is critical because it not only holds a privileged role in the FeeAggregator but also acts as escrow for asset flow during auctions. Flaws in logic here could lead to a severe loss of funds for the protocol.
 
 ### Auction economic correctness
 

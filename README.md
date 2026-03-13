@@ -6,8 +6,8 @@
     - Judge awards: $4,500 in USDC
     - Scout awards: $500 USDC
 - [Read our guidelines for more details](https://docs.code4rena.com/competitions)
-- Starts March 16, 2026 20:00 UTC
-- Ends March 26, 2026 20:00 UTC
+- Starts March 18, 2026 20:00 UTC
+- Ends March 27, 2026 20:00 UTC
 
 ### ❗ Important notes for wardens
 1. A coded, runnable PoC is required for all High/Medium submissions to this audit. 

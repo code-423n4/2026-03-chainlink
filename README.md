@@ -12,15 +12,19 @@
 
 ### ❗ Important notes for wardens
 
-1. A coded, runnable PoC is required for all High/Medium submissions to this audit.
+1. While this audit's code is not yet deployed, a variation of the [live code rules](https://docs.code4rena.com/competitions/live-code-rules) will apply, where **all submissions will be treated as sensitive**:
+   - Submissions will be hidden from all wardens (SR and non-SR alike) by default, to ensure that no sensitive issues are erroneously shared.
+   - Once the initial triage process has been completed, we’ll make submissions visible to [verified (KYC'ed) wardens](https://docs.code4rena.com/roles/certification-id-verification) only. PJQA will be open to verified wardens per the usual C4 process. 
+2. A coded, runnable PoC is required for all High/Medium submissions to this audit.
    - This repo includes a basic template to run the test suite.
    - PoCs must use the test suite provided in this repo.
    - Your submission will be marked as Insufficient if the POC is not runnable and working with the provided test suite.
    - Exception: PoC is optional (though recommended) for wardens with signal ≥ 0.4.
-2. Judging phase risk adjustments (upgrades/downgrades):
+3. Judging phase risk adjustments (upgrades/downgrades):
    - High- or Medium-risk submissions downgraded by the judge to Low-risk (QA) will be ineligible for awards.
    - Upgrading a Low-risk finding from a QA report to a Medium- or High-risk finding is not supported.
    - As such, wardens are encouraged to select the appropriate risk level carefully during the submission phase.
+4. Please note that the findings and audit report will remain private to the sponsor team only.
 
 ## V12 findings
 

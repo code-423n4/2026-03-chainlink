@@ -21,9 +21,9 @@ pragma solidity 0.8.26;
 //   - src/GPV2CompatibleAuction.sol (104 nSLOC) - CowSwap GPv2-compatible auction with EIP-1271
 //   - src/PriceManager.sol        (227 nSLOC) - Data Streams & Chainlink price feed management
 //   - src/WorkflowRouter.sol      (125 nSLOC) - CRE workflow routing for price/auction/bidder ops
-//   - src/interfaces/IAuctionBidder.sol (4 nSLOC)
 //   - src/interfaces/IAuctionCallback.sol (3 nSLOC)
 //   - src/interfaces/IBaseAuction.sol (3 nSLOC)
+//   - src/interfaces/IGPV2CompatibleAuction.sol - CowSwap order invalidation interface
 //   - src/interfaces/IGPV2Settlement.sol (6 nSLOC)
 //   - src/interfaces/IPriceManager.sol (3 nSLOC)
 //   - src/libraries/Errors.sol    (15 nSLOC)
@@ -51,9 +51,9 @@ import {Errors} from "src/libraries/Errors.sol";
 import {Roles} from "src/libraries/Roles.sol";
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
-import {IAuctionBidder} from "src/interfaces/IAuctionBidder.sol";
 import {IAuctionCallback} from "src/interfaces/IAuctionCallback.sol";
 import {IBaseAuction} from "src/interfaces/IBaseAuction.sol";
+import {IGPV2CompatibleAuction} from "src/interfaces/IGPV2CompatibleAuction.sol";
 import {IGPV2Settlement} from "src/interfaces/IGPV2Settlement.sol";
 import {IPriceManager} from "src/interfaces/IPriceManager.sol";
 

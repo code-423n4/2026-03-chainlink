@@ -15,4 +15,8 @@ interface IGPV2Settlement {
     GPv2Trade.Data[] calldata trades,
     GPv2Interaction.Data[][3] calldata interactions
   ) external;
+
+  function invalidateOrder(
+    bytes calldata orderUid
+  ) external;
 }

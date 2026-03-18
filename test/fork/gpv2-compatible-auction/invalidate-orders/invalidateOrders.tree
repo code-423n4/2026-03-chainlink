@@ -1,0 +1,6 @@
+invalidateOrders.t.sol
+├─ when the caller does not have the ORDER_MANAGER_ROLE 
+│  └─ it should revert
+└─ when the caller has the ORDER_MANAGER_ROLE 
+   ├─ it should invalidate all order UIDs on the GPv2Settlement contract
+   └─ it should set the filled amount to type(uint256).max for each order

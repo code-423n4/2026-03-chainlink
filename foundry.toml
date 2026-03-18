@@ -9,7 +9,7 @@ optimizer_runs = 300
 bytecode_hash = "none"
 
 [profile.snapshot]
-match_test = "performUpkeep|transmit|bid|isValidSignature"
+match_test = "performUpkeep|transmit|bid|isValidSignature|onReport"
 no_match_test = "RevertWhen"
 
 [profile.coverage]

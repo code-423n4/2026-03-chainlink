@@ -3,79 +3,81 @@ pragma solidity 0.8.26;
 
 import {IERC165, IReceiver} from "@chainlink/contracts/src/v0.8/keystone/interfaces/IReceiver.sol";
 import {ITypeAndVersion} from "@chainlink/contracts/src/v0.8/shared/interfaces/ITypeAndVersion.sol";
-import {IAuctionBidder} from "src/interfaces/IAuctionBidder.sol";
-import {IBaseAuction} from "src/interfaces/IBaseAuction.sol";
-import {IPriceManager} from "src/interfaces/IPriceManager.sol";
 
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {Caller} from "src/Caller.sol";
 import {PausableWithAccessControl} from "src/PausableWithAccessControl.sol";
 import {Errors} from "src/libraries/Errors.sol";
 import {Roles} from "src/libraries/Roles.sol";
 
-contract WorkflowRouter is PausableWithAccessControl, IReceiver, ITypeAndVersion {
-  /// @notice This error is thrown when the workflow ID extracted from the metadata does not correspond to any of the
-  /// accepted workflow types.
+contract WorkflowRouter is PausableWithAccessControl, Caller, IReceiver, ITypeAndVersion {
+  using EnumerableSet for EnumerableSet.AddressSet;
+  using EnumerableSet for EnumerableSet.Bytes32Set;
+
+  /// @notice This error is thrown when the workflow ID is not allowlisted.
   /// @param workflowId The unauthorized workflow ID.
-  error UnauthorizedWorkflow(bytes32 workflowId);
-  /// @notice This error is thrown when an invalid auction contract is provided.
-  error InvalidAuctionContract(address auction);
-  /// @notice This error is thrown when an invalid auction bidder contract is provided.
-  error InvalidAuctionBidder(address auctionBidder);
+  error WorkflowIdNotAllowlisted(bytes32 workflowId);
+  /// @notice This error is thrown when a target is not allowlisted.
+  /// @param workflowId The workflow ID associated with the unauthorized target.
+  /// @param target The unauthorized target address.
+  error TargetNotAllowlisted(bytes32 workflowId, address target);
+  /// @notice This error is thrown when the function selector is not allowlisted.
+  /// @param workflowId The workflow ID associated with the unauthorized function selector.
+  /// @param target The target address associated with the unauthorized function selector.
+  /// @param selector The invalid function selector.
+  error SelectorNotAllowlisted(bytes32 workflowId, address target, bytes4 selector);
 
-  /// @notice This event is emitted when the auction contract is set.
-  /// @param auction The address of the auction contract.
-  event AuctionSet(address indexed auction);
-  /// @notice This event is emitted when the auction bidder contract is set.
-  /// @param auctionBidder The address of the auction bidder contract.
-  event AuctionBidderSet(address indexed auctionBidder);
-  /// @notice This event is emitted when a workflow ID is set for a specific workflow type.
-  /// @param workflowType The type of the workflow.
-  /// @param workflowId The unique identifier of the workflow.
-  event WorkflowIdSet(WorkflowType indexed workflowType, bytes32 indexed workflowId);
+  /// @notice This event is emitted when a function selector is allowlisted for a workflow ID and target.
+  /// @param workflowId The workflow ID associated with the allowlisted function selector.
+  /// @param target The target address associated with the allowlisted function selector.
+  /// @param selector The function selector that was allowlisted.
+  event SelectorAllowlisted(bytes32 indexed workflowId, address indexed target, bytes4 indexed selector);
+  /// @notice This event is emitted when a workflow id is removed from the allowlist.
+  /// @param workflowId The workflow ID that was removed from the allowlist.
+  event WorkflowIdRemovedFromAllowlist(bytes32 indexed workflowId);
+  /// @notice This event is emitted when a target is removed from the allowlist.
+  /// @param workflowId The workflow ID associated with the removed target.
+  /// @param target The target address that was removed from the allowlist.
+  event TargetRemovedFromAllowlist(bytes32 indexed workflowId, address indexed target);
+  /// @notice This event is emitted when a function selector is removed from the allowlist.
+  /// @param workflowId The workflow ID associated with the removed function selector.
+  /// @param target The target address associated with the removed function selector.
+  /// @param selector The function selector that was removed from the allowlist.
+  event SelectorRemovedFromAllowlist(bytes32 indexed workflowId, address indexed target, bytes4 indexed selector);
 
-  /// @notice Enum representing different workflow types
-  enum WorkflowType {
-    PRICE_ADMIN,
-    AUCTION_WORKER,
-    AUCTION_BIDDER
-  }
-
-  /// @notice Parameters to initialize the contract.
-  struct ConstructorParams {
-    address admin; // ───────────────────╮ The initial contract admin.
-    uint48 adminRoleTransferDelay; // ───╯ The min seconds before the admin address can be transferred.
-    address auction; //                    The Auction contract.
-    address auctionBidder; //              The Auction Bidder contract.
-    SetWorkflowIdParams[] workflowIds; //  The workflow IDs to set for specific workflow types.
+  /// @notice Parameters to allowlist a target and selector for a workflow ID.
+  struct TargetSelectors {
+    address target; // The target address to allowlist for the workflow ID.
+    bytes4[] selectors; // The function selectors to allowlist for the target and workflow ID.
   }
 
   /// @notice Parameters to set a workflow ID for a specific workflow type.
-  struct SetWorkflowIdParams {
-    WorkflowType workflowType; // The type of the workflow.
+  struct AllowlistedWorkflow {
     bytes32 workflowId; // The unique identifier of the workflow.
+    TargetSelectors[] targetSelectors; // The target and selector pairs that are allowlisted for the workflow ID.
   }
 
   /// @inheritdoc ITypeAndVersion
   string public constant override typeAndVersion = "WorkflowRouter 1.0.0-dev";
 
-  /// @notice The Auction contract.
-  address private s_auction;
-  /// @notice The Auction Bidder contract.
-  IAuctionBidder private s_auctionBidder;
+  /// @notice Set of allowlisted workflow IDs.
+  EnumerableSet.Bytes32Set private s_allowlistedWorkflowIds;
 
-  /// @notice Mapping of workflow types to their unique identifiers.
-  mapping(WorkflowType workflowType => bytes32 workflowId) private s_workflowIds;
+  /// @notice Struct to store the allowlisted targets and selectors for a workflow ID.
+  struct WorkflowInfo {
+    // Set of allowlisted targets.
+    EnumerableSet.AddressSet allowlistedTargets;
+    // Mapping of allowlisted targets to their corresponding allowlisted function selectors.
+    mapping(address target => EnumerableSet.Bytes32Set selectors) allowlistedSelectors;
+  }
+
+  /// @notice Mapping of allowlisted workflowId to its allowlisted targets and selectors.
+  mapping(bytes32 workflowId => WorkflowInfo info) private s_workflowInfos;
 
   constructor(
-    ConstructorParams memory params
-  ) PausableWithAccessControl(params.adminRoleTransferDelay, params.admin) {
-    _setAuction(params.auction);
-    _setAuctionBidder(params.auctionBidder);
-
-    if (params.workflowIds.length > 0) {
-      _setWorkflowIds(params.workflowIds);
-    }
-  }
+    uint48 adminRoleTransferDelay,
+    address admin
+  ) PausableWithAccessControl(adminRoleTransferDelay, admin) {}
 
   /// @inheritdoc IReceiver
   /// @dev precondition - the contract must not be paused.
@@ -94,111 +96,193 @@ contract WorkflowRouter is PausableWithAccessControl, IReceiver, ITypeAndVersion
       revert Errors.InvalidZeroValue();
     }
 
-    if (workflowId == s_workflowIds[WorkflowType.PRICE_ADMIN]) {
-      bytes[] memory unverifiedReports = abi.decode(report, (bytes[]));
-      IPriceManager(s_auction).transmit(unverifiedReports);
-    } else if (workflowId == s_workflowIds[WorkflowType.AUCTION_WORKER]) {
-      IBaseAuction(s_auction).performUpkeep(report);
-    } else if (workflowId == s_workflowIds[WorkflowType.AUCTION_BIDDER]) {
-      (address assetIn, uint256 amount, Caller.Call[] memory solution) =
-        abi.decode(report, (address, uint256, Caller.Call[]));
-      s_auctionBidder.bid(assetIn, amount, solution);
-    } else {
-      revert UnauthorizedWorkflow(workflowId);
+    if (!s_allowlistedWorkflowIds.contains(workflowId)) {
+      revert WorkflowIdNotAllowlisted(workflowId);
     }
+
+    (address target, bytes memory data) = abi.decode(report, (address, bytes));
+    bytes4 selector;
+
+    assembly ("memory-safe") {
+      selector := mload(add(data, 32))
+    }
+
+    if (!s_workflowInfos[workflowId].allowlistedSelectors[target].contains(selector)) {
+      if (!s_workflowInfos[workflowId].allowlistedTargets.contains(target)) {
+        revert TargetNotAllowlisted(workflowId, target);
+      }
+      revert SelectorNotAllowlisted(workflowId, target, selector);
+    }
+
+    _call(target, data);
   }
 
   // ================================================================================================
   // │                                        Configuration                                         │
   // ================================================================================================
 
-  /// @notice Sets the auction contract.
+  /// @notice Applies updates to the allowlisted workflows, targets, and selectors.
   /// @dev precondition - the caller must have the DEFAULT_ADMIN_ROLE.
-  /// @param auction The address of the auction contract.
-  function setAuction(
-    address auction
+  /// @dev precondition - at least one of the removes or adds lists must be non empty.
+  /// @dev precondition - workflow IDs in the removes list must already be allowlisted.
+  /// @dev precondition - workflow IDs in the adds list must not be zero.
+  /// @dev Although sets are unbounded, in practice the removes and adds lists should be kept to a reasonable length to
+  /// avoid running into block gas limits when processing the updates.
+  /// @param removes An array of workflow IDs to remove from the allowlist.
+  /// @param adds An array of AllowlistedWorkflow structs representing the workflow IDs, targets, and selectors to add
+  /// to the allowlist.
+  function applyAllowlistedWorkflowsUpdates(
+    bytes32[] calldata removes,
+    AllowlistedWorkflow[] calldata adds
   ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    _setAuction(auction);
-  }
-
-  /// @notice Internal function to set the auction contract.
-  /// @dev precondition - the auction address must not be zero.
-  /// @dev precondition - the auction contract must implement the IBaseAuction and IPriceManager interfaces.
-  /// @param auction The address of the auction contract.
-  function _setAuction(
-    address auction
-  ) internal {
-    if (auction == address(0)) {
-      revert Errors.InvalidZeroAddress();
-    }
-    if (!(IERC165(auction).supportsInterface(type(IBaseAuction).interfaceId)
-          && IERC165(auction).supportsInterface(type(IPriceManager).interfaceId))) {
-      revert InvalidAuctionContract(auction);
-    }
-    if (address(s_auction) == auction) {
-      revert Errors.ValueNotUpdated();
+    if (removes.length == 0 && adds.length == 0) {
+      revert Errors.EmptyList();
     }
 
-    s_auction = auction;
+    for (uint256 i; i < removes.length; ++i) {
+      bytes32 workflowId = removes[i];
+      _applyAllowlistedTargetsUpdates(
+        workflowId, s_workflowInfos[workflowId].allowlistedTargets.values(), new TargetSelectors[](0)
+      );
+      s_allowlistedWorkflowIds.remove(workflowId);
 
-    emit AuctionSet(auction);
-  }
-
-  /// @notice Sets the auction bidder contract.
-  /// @dev precondition - the caller must have the DEFAULT_ADMIN_ROLE.
-  /// @param auctionBidder The address of the auction bidder contract.
-  function setAuctionBidder(
-    address auctionBidder
-  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    _setAuctionBidder(auctionBidder);
-  }
-
-  /// @notice Internal function to set the auction bidder contract.
-  /// @dev precondition - the auction bidder address must not be zero.
-  /// @dev precondition - the auction bidder contract must implement the IAuctionBidder interface.
-  /// @param auctionBidder The address of the auction bidder contract.
-  function _setAuctionBidder(
-    address auctionBidder
-  ) internal {
-    if (auctionBidder == address(0)) {
-      revert Errors.InvalidZeroAddress();
-    }
-    if (!IERC165(auctionBidder).supportsInterface(type(IAuctionBidder).interfaceId)) {
-      revert InvalidAuctionBidder(auctionBidder);
-    }
-    if (address(s_auctionBidder) == auctionBidder) {
-      revert Errors.ValueNotUpdated();
+      emit WorkflowIdRemovedFromAllowlist(workflowId);
     }
 
-    s_auctionBidder = IAuctionBidder(auctionBidder);
+    for (uint256 i; i < adds.length; ++i) {
+      bytes32 workflowId = adds[i].workflowId;
 
-    emit AuctionBidderSet(auctionBidder);
-  }
-
-  /// @notice Sets workflow IDs for specific workflow types.
-  /// @dev precondition - the caller must have the DEFAULT_ADMIN_ROLE.
-  function setWorkflowIds(
-    SetWorkflowIdParams[] memory params
-  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    _setWorkflowIds(params);
-  }
-
-  /// @dev precondition - the new workflow IDs must not be zero.
-  /// @dev precondition - the new workflow id must be different than the one already set.
-  function _setWorkflowIds(
-    SetWorkflowIdParams[] memory params
-  ) internal {
-    for (uint256 i = 0; i < params.length; ++i) {
-      if (params[i].workflowId == bytes32(0)) {
+      if (workflowId == bytes32(0)) {
         revert Errors.InvalidZeroValue();
       }
-      if (s_workflowIds[params[i].workflowType] == params[i].workflowId) {
-        revert Errors.ValueNotUpdated();
+
+      s_allowlistedWorkflowIds.add(workflowId);
+      _applyAllowlistedTargetsUpdates(workflowId, new address[](0), adds[i].targetSelectors);
+    }
+  }
+
+  /// @notice Applies updates to the allowlisted targets for a workflow ID.
+  /// @dev precondition - the caller must have the DEFAULT_ADMIN_ROLE.
+  /// @param workflowId The workflow ID to apply the target updates for.
+  /// @param removes An array of target addresses to remove from the allowlist for the specified workflow ID.
+  /// @param adds An array of TargetSelectors structs representing the targets and selectors to add to the allowlist for
+  /// the specified workflow ID.
+  function applyAllowlistedTargetsUpdates(
+    bytes32 workflowId,
+    address[] calldata removes,
+    TargetSelectors[] calldata adds
+  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _applyAllowlistedTargetsUpdates(workflowId, removes, adds);
+  }
+
+  /// @dev precondition - the workflow ID must be allowlisted.
+  /// @dev precondition - at least one of the removes or adds lists must be non empty.
+  /// @dev precondition - targets in the removes list must already be allowlisted for the specified workflow ID.
+  /// @dev precondition - targets in the adds list must not be zero.
+  /// @param workflowId The workflow ID to apply the target updates for.
+  /// @param removes An array of target addresses to remove from the allowlist for the specified workflow ID.
+  function _applyAllowlistedTargetsUpdates(
+    bytes32 workflowId,
+    address[] memory removes,
+    TargetSelectors[] memory adds
+  ) private {
+    if (!s_allowlistedWorkflowIds.contains(workflowId)) {
+      revert WorkflowIdNotAllowlisted(workflowId);
+    }
+    if (removes.length == 0 && adds.length == 0) {
+      revert Errors.EmptyList();
+    }
+
+    for (uint256 i; i < removes.length; ++i) {
+      address target = removes[i];
+      bytes4[] memory removedSelectors;
+      bytes32[] memory allowlistedSelectors = s_workflowInfos[workflowId].allowlistedSelectors[target].values();
+      // This is a safe cast since both arrays are in memory and therefore each element is stored in a 32 bytes slot.
+      assembly ("memory-safe") {
+        removedSelectors := allowlistedSelectors
       }
 
-      s_workflowIds[params[i].workflowType] = params[i].workflowId;
+      _applyAllowlistedSelectorsUpdates(workflowId, target, removedSelectors, new bytes4[](0));
+      s_workflowInfos[workflowId].allowlistedTargets.remove(target);
 
-      emit WorkflowIdSet(params[i].workflowType, params[i].workflowId);
+      emit TargetRemovedFromAllowlist(workflowId, target);
+    }
+
+    for (uint256 i; i < adds.length; ++i) {
+      address target = adds[i].target;
+
+      if (target == address(0)) {
+        revert Errors.InvalidZeroAddress();
+      }
+
+      s_workflowInfos[workflowId].allowlistedTargets.add(target);
+      _applyAllowlistedSelectorsUpdates(workflowId, target, new bytes4[](0), adds[i].selectors);
+    }
+  }
+
+  /// @notice Applies updates to the allowlisted selectors for a workflow ID and target.
+  /// @dev precondition - the caller must have the DEFAULT_ADMIN_ROLE.
+  /// @param workflowId The workflow ID to apply the selector updates for.
+  /// @param target The target address to apply the selector updates for.
+  /// @param removes An array of function selectors to remove from the allowlist for the specified workflow ID and
+  /// target.
+  /// @param adds An array of function selectors to add to the allowlist for the specified workflow ID and target.
+  function applyAllowlistedSelectorsUpdates(
+    bytes32 workflowId,
+    address target,
+    bytes4[] calldata removes,
+    bytes4[] calldata adds
+  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _applyAllowlistedSelectorsUpdates(workflowId, target, removes, adds);
+  }
+
+  /// @dev precondition - the workflow ID must be allowlisted.
+  /// @dev precondition - the target must be allowlisted for the specified workflow ID.
+  /// @dev precondition - at least one of the removes or adds lists must be non empty.
+  /// @dev precondition - function selectors in the removes list must already be allowlisted for the specified workflow
+  /// ID and target.
+  /// @dev precondition - function selectors in the adds list must not be zero.
+  /// @param workflowId The workflow ID to apply the selector updates for.
+  /// @param target The target address to apply the selector updates for.
+  /// @param removes An array of function selectors to remove from the allowlist for the specified workflow ID and
+  /// target.
+  /// @param adds An array of function selectors to add to the allowlist for the specified workflow ID and
+  /// target.
+  function _applyAllowlistedSelectorsUpdates(
+    bytes32 workflowId,
+    address target,
+    bytes4[] memory removes,
+    bytes4[] memory adds
+  ) private {
+    if (!s_allowlistedWorkflowIds.contains(workflowId)) {
+      revert WorkflowIdNotAllowlisted(workflowId);
+    }
+    if (!s_workflowInfos[workflowId].allowlistedTargets.contains(target)) {
+      revert TargetNotAllowlisted(workflowId, target);
+    }
+    if (removes.length == 0 && adds.length == 0) {
+      revert Errors.EmptyList();
+    }
+
+    for (uint256 i; i < removes.length; ++i) {
+      bytes4 selector = removes[i];
+      if (!s_workflowInfos[workflowId].allowlistedSelectors[target].remove(bytes32(selector))) {
+        revert SelectorNotAllowlisted(workflowId, target, selector);
+      }
+
+      emit SelectorRemovedFromAllowlist(workflowId, target, selector);
+    }
+
+    for (uint256 i; i < adds.length; ++i) {
+      bytes4 selector = adds[i];
+
+      if (selector == bytes4(0)) {
+        revert Errors.InvalidZeroValue();
+      }
+
+      if (s_workflowInfos[workflowId].allowlistedSelectors[target].add(bytes32(selector))) {
+        emit SelectorAllowlisted(workflowId, target, selector);
+      }
     }
   }
 
@@ -206,25 +290,34 @@ contract WorkflowRouter is PausableWithAccessControl, IReceiver, ITypeAndVersion
   // │                                           Getters                                            │
   // ================================================================================================
 
-  /// @notice Getter function to retrieve the auction contract.
-  /// @return auction The address of the auction contract.
-  function getAuction() external view returns (address auction) {
-    return s_auction;
+  /// @notice Getter function to retrieve the allowlisted workflow IDs.
+  function getAllowlistedWorkflowIds() external view returns (bytes32[] memory workflowIds) {
+    return s_allowlistedWorkflowIds.values();
   }
 
-  /// @notice Getter function to retrieve the auction bidder contract.
-  /// @return auctionBidder The address of the auction bidder contract.
-  function getAuctionBidder() external view returns (IAuctionBidder auctionBidder) {
-    return s_auctionBidder;
+  /// @notice Getter function to retrieve the allowlisted targets for a workflow ID.
+  /// @param workflowId The workflow ID to retrieve the allowlisted targets for.
+  /// @return targets An array of allowlisted target addresses for the specified workflow ID.
+  function getAllowlistedTargets(
+    bytes32 workflowId
+  ) external view returns (address[] memory targets) {
+    return s_workflowInfos[workflowId].allowlistedTargets.values();
   }
 
-  /// @notice Getter function to retrieve the workflow ID for a specific workflow type.
-  /// @param workflowType The type of the workflow.
-  /// @return workflowId The unique identifier of the workflow.
-  function getWorkflowId(
-    WorkflowType workflowType
-  ) external view returns (bytes32 workflowId) {
-    return s_workflowIds[workflowType];
+  /// @notice Getter function to retrieve the allowlisted function selectors for a workflow ID and target.
+  /// @param workflowId The workflow ID to retrieve the allowlisted function selectors for.
+  /// @param target The target address to retrieve the allowlisted function selectors for.
+  /// @return selectors An array of allowlisted function selectors for the specified workflow ID and target
+  function getAllowlistedSelectors(
+    bytes32 workflowId,
+    address target
+  ) external view returns (bytes4[] memory selectors) {
+    bytes32[] memory allowlistedSelectors = s_workflowInfos[workflowId].allowlistedSelectors[target].values();
+    assembly ("memory-safe") {
+      selectors := allowlistedSelectors
+    }
+
+    return selectors;
   }
 
   /// @inheritdoc IERC165

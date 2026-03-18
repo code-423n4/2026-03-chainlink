@@ -1,0 +1,6 @@
+isValidSignature.t.sol
+└─ given an auction is live with valid prices
+   └─ when a solver settles the order through GPv2Settlement
+      ├─ it should transfer the sell token from the auction contract
+      ├─ it should transfer the buy token to the auction contract
+      └─ it should validate the EIP-1271 signature via isValidSignature

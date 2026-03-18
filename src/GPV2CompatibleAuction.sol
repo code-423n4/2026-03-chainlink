@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
+import {IGPV2CompatibleAuction} from "src/interfaces/IGPV2CompatibleAuction.sol";
 import {IGPV2Settlement} from "src/interfaces/IGPV2Settlement.sol";
 
 import {BaseAuction} from "src/BaseAuction.sol";
 import {Errors} from "src/libraries/Errors.sol";
+import {Roles} from "src/libraries/Roles.sol";
 
 import {GPv2Order} from "@cowprotocol/libraries/GPv2Order.sol";
 import {IERC1271} from "@openzeppelin/contracts/interfaces/IERC1271.sol";
@@ -14,7 +16,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 /// @title GPV2 Compatible Auction v1.0.0 Contract.
 /// @notice This contract extends the BaseAuction contract to provide compatibility with CowProtocol settlement contract
 /// via EIP-1271 signed orders.
-contract GPV2CompatibleAuction is BaseAuction, IERC1271 {
+contract GPV2CompatibleAuction is BaseAuction, IERC1271, IGPV2CompatibleAuction {
   using SafeERC20 for IERC20;
 
   /// @notice This event is emitted when the CowSwap vault relayer address is set.
@@ -171,6 +173,16 @@ contract GPV2CompatibleAuction is BaseAuction, IERC1271 {
     }
 
     return IERC1271.isValidSignature.selector;
+  }
+
+  /// @inheritdoc IGPV2CompatibleAuction
+  /// @dev precondition - the caller must have the ORDER_MANAGER_ROLE.
+  function invalidateOrders(
+    bytes[] calldata orderUids
+  ) external onlyRole(Roles.ORDER_MANAGER_ROLE) {
+    for (uint256 i = 0; i < orderUids.length; i++) {
+      i_gpV2Settlement.invalidateOrder(orderUids[i]);
+    }
   }
 
   /// @notice Getter function to retrieve the CowSwap vault relayer address.

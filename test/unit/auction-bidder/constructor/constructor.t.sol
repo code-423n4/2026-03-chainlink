@@ -2,6 +2,7 @@
 pragma solidity 0.8.26;
 
 import {AuctionBidder} from "src/AuctionBidder.sol";
+import {IAuctionCallback} from "src/interfaces/IAuctionCallback.sol";
 import {Errors} from "src/libraries/Errors.sol";
 import {BaseUnitTest} from "test/unit/BaseUnitTest.t.sol";
 
@@ -23,6 +24,7 @@ contract AuctionBidder_ConstructorUnitTest is BaseUnitTest {
     assertEq(address(auctionBidder.getAuction()), address(s_auction));
     assertEq(auctionBidder.getReceiver(), i_receiver);
     assertEq(auctionBidder.typeAndVersion(), "AuctionBidder 1.0.0-dev");
+    assertTrue(auctionBidder.supportsInterface(type(IAuctionCallback).interfaceId));
   }
 
   function test_constructor_WithReceiverEqAddressZero() external {
@@ -35,5 +37,6 @@ contract AuctionBidder_ConstructorUnitTest is BaseUnitTest {
     assertEq(address(auctionBidder.getAuction()), address(s_auction));
     assertEq(auctionBidder.getReceiver(), address(0));
     assertEq(auctionBidder.typeAndVersion(), "AuctionBidder 1.0.0-dev");
+    assertTrue(auctionBidder.supportsInterface(type(IAuctionCallback).interfaceId));
   }
 }

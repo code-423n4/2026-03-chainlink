@@ -52,4 +52,8 @@ library Roles {
   /// function.
   /// @dev Hash: 0xfe75b903b42451ab1e1bae25aa3093a034a04d4e7afcf46082c14302e309e584
   bytes32 public constant AUCTION_BIDDER_ROLE = keccak256("AUCTION_BIDDER_ROLE");
+  /// @notice This is the ID for the order worker role, which is given to addresses that are able to call the auction's
+  /// invalidateOrders function.
+  /// @dev Hash: 0xa0e9ebc8333a8b9c6c09d582fbbae15a71536f8a18b8630a58ee34e8fa1306f6
+  bytes32 public constant ORDER_MANAGER_ROLE = keccak256("ORDER_MANAGER_ROLE");
 }

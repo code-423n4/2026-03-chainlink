@@ -152,26 +152,7 @@ abstract contract BaseIntegrationTest is BaseTest {
     s_auction = new GPV2CompatibleAuction(params, s_gpV2VaultRelayer, address(s_mockGPV2Settlement));
     s_auctionBidder = new AuctionBidder(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner, address(s_auction), address(s_auction));
     s_auctionBidder = new AuctionBidder(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner, address(s_auction), address(s_reserves));
-
-    WorkflowRouter.SetWorkflowIdParams[] memory workflowIds = new WorkflowRouter.SetWorkflowIdParams[](3);
-    workflowIds[0] = WorkflowRouter.SetWorkflowIdParams({
-      workflowType: WorkflowRouter.WorkflowType.PRICE_ADMIN, workflowId: PRICE_ADMIN_WORKFLOW_ID
-    });
-    workflowIds[1] = WorkflowRouter.SetWorkflowIdParams({
-      workflowType: WorkflowRouter.WorkflowType.AUCTION_WORKER, workflowId: AUCTION_WORKER_WORKFLOW_ID
-    });
-    workflowIds[2] = WorkflowRouter.SetWorkflowIdParams({
-      workflowType: WorkflowRouter.WorkflowType.AUCTION_BIDDER, workflowId: AUCTION_BIDDER_WORKFLOW_ID
-    });
-    s_workflowRouter = new WorkflowRouter(
-      WorkflowRouter.ConstructorParams({
-        admin: i_owner,
-        adminRoleTransferDelay: DEFAULT_ADMIN_TRANSFER_DELAY,
-        auction: address(s_auction),
-        auctionBidder: address(s_auctionBidder),
-        workflowIds: workflowIds
-      })
-    );
+    s_workflowRouter = new WorkflowRouter(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner);
 
     // ================================================================================================
     // │                                        Role Granting                                         │
@@ -249,6 +230,28 @@ abstract contract BaseIntegrationTest is BaseTest {
     s_feeAggregator.applyAllowlistedAssetUpdates(new address[](0), allowlistedAssets);
 
     _changePrank(i_owner);
+
+    WorkflowRouter.AllowlistedWorkflow[] memory adds = new WorkflowRouter.AllowlistedWorkflow[](3);
+    adds[0].workflowId = PRICE_ADMIN_WORKFLOW_ID;
+    adds[0].targetSelectors = new WorkflowRouter.TargetSelectors[](1);
+    adds[0].targetSelectors[0].target = address(s_auction);
+    adds[0].targetSelectors[0].selectors = new bytes4[](1);
+    adds[0].targetSelectors[0].selectors[0] = s_auction.transmit.selector;
+
+    adds[1].workflowId = AUCTION_WORKER_WORKFLOW_ID;
+    adds[1].targetSelectors = new WorkflowRouter.TargetSelectors[](1);
+    adds[1].targetSelectors[0].target = address(s_auction);
+    adds[1].targetSelectors[0].selectors = new bytes4[](2);
+    adds[1].targetSelectors[0].selectors[0] = s_auction.performUpkeep.selector;
+    adds[1].targetSelectors[0].selectors[1] = s_auction.invalidateOrders.selector;
+
+    adds[2].workflowId = AUCTION_BIDDER_WORKFLOW_ID;
+    adds[2].targetSelectors = new WorkflowRouter.TargetSelectors[](1);
+    adds[2].targetSelectors[0].target = address(s_auctionBidder);
+    adds[2].targetSelectors[0].selectors = new bytes4[](1);
+    adds[2].targetSelectors[0].selectors[0] = s_auctionBidder.bid.selector;
+
+    s_workflowRouter.applyAllowlistedWorkflowsUpdates(new bytes32[](0), adds);
 
     // Add contracts to the list of contracts that are EmergencyWithdrawer
     s_commonContracts[CommonContracts.EMERGENCY_WITHDRAWER].push(address(s_auction));

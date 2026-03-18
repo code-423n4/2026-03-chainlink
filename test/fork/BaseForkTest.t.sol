@@ -86,25 +86,7 @@ abstract contract BaseForkTest is BaseTest, Mainnet {
 
     s_auctionBidder = new AuctionBidder(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner, address(s_auction), address(s_auction));
 
-    WorkflowRouter.SetWorkflowIdParams[] memory workflowIds = new WorkflowRouter.SetWorkflowIdParams[](3);
-    workflowIds[0] = WorkflowRouter.SetWorkflowIdParams({
-      workflowType: WorkflowRouter.WorkflowType.PRICE_ADMIN, workflowId: PRICE_ADMIN_WORKFLOW_ID
-    });
-    workflowIds[1] = WorkflowRouter.SetWorkflowIdParams({
-      workflowType: WorkflowRouter.WorkflowType.AUCTION_WORKER, workflowId: AUCTION_WORKER_WORKFLOW_ID
-    });
-    workflowIds[2] = WorkflowRouter.SetWorkflowIdParams({
-      workflowType: WorkflowRouter.WorkflowType.AUCTION_BIDDER, workflowId: AUCTION_BIDDER_WORKFLOW_ID
-    });
-    s_workflowRouter = new WorkflowRouter(
-      WorkflowRouter.ConstructorParams({
-        admin: i_owner,
-        adminRoleTransferDelay: DEFAULT_ADMIN_TRANSFER_DELAY,
-        auction: address(s_auction),
-        auctionBidder: address(s_auctionBidder),
-        workflowIds: workflowIds
-      })
-    );
+    s_workflowRouter = new WorkflowRouter(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner);
 
     // ================================================================================================
     // │                                        Role Granting                                         │
@@ -120,6 +102,7 @@ abstract contract BaseForkTest is BaseTest, Mainnet {
     s_auction.grantRole(Roles.ASSET_ADMIN_ROLE, i_assetAdmin);
     s_auction.grantRole(Roles.AUCTION_WORKER_ROLE, address(s_workflowRouter));
     s_auction.grantRole(Roles.AUCTION_WORKER_ROLE, i_auctionAdmin);
+    s_auction.grantRole(Roles.ORDER_MANAGER_ROLE, address(s_workflowRouter));
     s_auctionBidder.grantRole(Roles.PAUSER_ROLE, i_pauser);
     s_auctionBidder.grantRole(Roles.AUCTION_BIDDER_ROLE, i_auctionBidder);
     s_auctionBidder.grantRole(Roles.AUCTION_BIDDER_ROLE, address(s_workflowRouter));
@@ -173,6 +156,28 @@ abstract contract BaseForkTest is BaseTest, Mainnet {
     s_auction.applyAssetParamsUpdates(assetParamsUpdates, new address[](0));
 
     _changePrank(i_owner);
+
+    WorkflowRouter.AllowlistedWorkflow[] memory adds = new WorkflowRouter.AllowlistedWorkflow[](3);
+    adds[0].workflowId = PRICE_ADMIN_WORKFLOW_ID;
+    adds[0].targetSelectors = new WorkflowRouter.TargetSelectors[](1);
+    adds[0].targetSelectors[0].target = address(s_auction);
+    adds[0].targetSelectors[0].selectors = new bytes4[](1);
+    adds[0].targetSelectors[0].selectors[0] = s_auction.transmit.selector;
+
+    adds[1].workflowId = AUCTION_WORKER_WORKFLOW_ID;
+    adds[1].targetSelectors = new WorkflowRouter.TargetSelectors[](1);
+    adds[1].targetSelectors[0].target = address(s_auction);
+    adds[1].targetSelectors[0].selectors = new bytes4[](2);
+    adds[1].targetSelectors[0].selectors[0] = s_auction.performUpkeep.selector;
+    adds[1].targetSelectors[0].selectors[1] = s_auction.invalidateOrders.selector;
+
+    adds[2].workflowId = AUCTION_BIDDER_WORKFLOW_ID;
+    adds[2].targetSelectors = new WorkflowRouter.TargetSelectors[](1);
+    adds[2].targetSelectors[0].target = address(s_auctionBidder);
+    adds[2].targetSelectors[0].selectors = new bytes4[](1);
+    adds[2].targetSelectors[0].selectors[0] = s_auctionBidder.bid.selector;
+
+    s_workflowRouter.applyAllowlistedWorkflowsUpdates(new bytes32[](0), adds);
 
     s_commonContracts[CommonContracts.PRICE_MANAGER].push(address(s_auction));
 

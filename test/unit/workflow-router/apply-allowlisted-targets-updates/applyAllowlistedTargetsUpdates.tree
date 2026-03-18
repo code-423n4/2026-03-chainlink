@@ -1,0 +1,24 @@
+applyAllowlistedTargetsUpdates.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the DEFAULT_ADMIN_ROLE
+   ├─ when the workflow ID is not allowlisted
+   │  └─ it should revert
+   └─ when the workflow ID is allowlisted
+      ├─ when both removes and adds are empty
+      │  └─ it should revert
+      └─ when either removes or adds are not empty
+         ├─ when a removed target is not allowlisted for the workflow ID
+         │  └─ it should revert
+         ├─ when an added target is address zero
+         │  └─ it should revert
+         ├─ when only removing targets
+         │  ├─ it should remove the targets from the allowlist
+         │  ├─ it should clean up all selectors for the removed targets
+         │  └─ it should emit the correct events
+         ├─ when only adding targets
+         │  ├─ it should allowlist the targets and selectors
+         │  └─ it should emit the correct events
+         └─ when adding and removing targets in the same call
+            ├─ it should process removes before adds
+            └─ it should emit the correct events

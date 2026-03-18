@@ -57,7 +57,10 @@ contract GPV2CompatibleAuction_IsValidSignatureIntegrationTest is BaseIntegratio
     _changePrank(i_forwarder);
     s_workflowRouter.onReport(
       abi.encodePacked(AUCTION_BIDDER_WORKFLOW_ID, bytes10(0), bytes20(0)),
-      abi.encode(address(s_mockUSDC), s_order.sellAmount, solution)
+      abi.encode(
+        address(s_auctionBidder),
+        abi.encodeWithSelector(s_auctionBidder.bid.selector, address(s_mockUSDC), s_order.sellAmount, solution)
+      )
     );
   }
 

@@ -1,0 +1,21 @@
+applyAllowlistedWorkflowsUpdates.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the DEFAULT_ADMIN_ROLE
+   ├─ when both removes and adds are empty
+   │  └─ it should revert
+   └─ when either removes or adds are not empty
+      ├─ when a removed workflow ID is not allowlisted
+      │  └─ it should revert
+      ├─ when an added workflow ID is zero
+      │  └─ it should revert
+      ├─ when only adding workflows
+      │  ├─ it should allowlist the workflow IDs, targets, and selectors
+      │  └─ it should emit the correct events
+      ├─ when only removing workflows
+      │  ├─ it should remove the workflow IDs from the allowlist
+      │  ├─ it should clean up all targets and selectors for the removed workflows
+      │  └─ it should emit the correct events
+      └─ when adding and removing workflows in the same call
+         ├─ it should process removes before adds
+         └─ it should correctly reflect the final allowlisted state

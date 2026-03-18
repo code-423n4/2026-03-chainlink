@@ -166,15 +166,7 @@ abstract contract BaseUnitTest is BaseTest {
 
     s_auctionBidder = new AuctionBidder(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner, address(s_auction), address(s_auction));
 
-    s_workflowRouter = new WorkflowRouter(
-      WorkflowRouter.ConstructorParams({
-        adminRoleTransferDelay: DEFAULT_ADMIN_TRANSFER_DELAY,
-        admin: i_owner,
-        auction: address(s_auction),
-        auctionBidder: address(s_auctionBidder),
-        workflowIds: new WorkflowRouter.SetWorkflowIdParams[](0)
-      })
-    );
+    s_workflowRouter = new WorkflowRouter(DEFAULT_ADMIN_TRANSFER_DELAY, i_owner);
 
     // ================================================================================================
     // │                                        Role Granting                                         │
@@ -193,6 +185,9 @@ abstract contract BaseUnitTest is BaseTest {
     s_auction.grantRole(Roles.AUCTION_WORKER_ROLE, i_auctionAdmin);
 
     s_auctionBidder.grantRole(Roles.PAUSER_ROLE, i_pauser);
+
+    s_workflowRouter.grantRole(Roles.FORWARDER_ROLE, i_forwarder);
+    s_workflowRouter.grantRole(Roles.PAUSER_ROLE, i_pauser);
 
     // ================================================================================================
     // │                                        Configuration                                         │

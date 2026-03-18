@@ -46,4 +46,8 @@ contract MockGPV2Settlement is IGPV2Settlement {
     GPv2Trade.Data[] calldata trades,
     GPv2Interaction.Data[][3] calldata interactions
   ) external override {}
+
+  function invalidateOrder(
+    bytes calldata orderUid
+  ) external override {}
 }

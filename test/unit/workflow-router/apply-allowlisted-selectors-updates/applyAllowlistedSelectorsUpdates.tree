@@ -1,0 +1,27 @@
+applyAllowlistedSelectorsUpdates.t.sol
+├─ when the caller does not have the DEFAULT_ADMIN_ROLE
+│  └─ it should revert
+└─ when the caller has the DEFAULT_ADMIN_ROLE
+   ├─ when the workflow ID is not allowlisted
+   │  └─ it should revert
+   └─ when the workflow ID is allowlisted
+      ├─ when the target is not allowlisted for the workflow ID
+      │  └─ it should revert
+      └─ when the target is allowlisted for the workflow ID
+         ├─ when both removes and adds are empty
+         │  └─ it should revert
+         └─ when either removes or adds are not empty
+            ├─ when a removed selector is not allowlisted
+            │  └─ it should revert
+            ├─ when an added selector is zero
+            │  └─ it should revert
+            ├─ when only removing selectors
+            │  ├─ it should remove the selectors from the allowlist
+            │  └─ it should emit the correct events
+            ├─ when only adding selectors
+            │  ├─ it should allowlist the selectors
+            │  └─ it should emit the correct events
+            └─ when adding and removing selectors in the same call
+               ├─ it should process removes before adds
+               ├─ it should correctly reflect the final allowlisted state
+               └─ it should emit the correct events

@@ -2,7 +2,6 @@
 pragma solidity 0.8.26;
 
 import {ITypeAndVersion} from "@chainlink/contracts/src/v0.8/shared/interfaces/ITypeAndVersion.sol";
-import {IAuctionBidder} from "src/interfaces/IAuctionBidder.sol";
 import {IAuctionCallback} from "src/interfaces/IAuctionCallback.sol";
 import {IBaseAuction} from "src/interfaces/IBaseAuction.sol";
 
@@ -18,7 +17,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title Auction Bidder v1.0.0 Contract.
 /// @notice This contract is responsible for bidding on auctions and executing arbitrary logic to solve the auction.
-contract AuctionBidder is PausableWithAccessControl, Caller, IAuctionBidder, IAuctionCallback, ITypeAndVersion {
+contract AuctionBidder is PausableWithAccessControl, Caller, IAuctionCallback, ITypeAndVersion {
   using SafeERC20 for IERC20;
 
   /// @notice This event is emitted when the auction contract is set.
@@ -57,9 +56,12 @@ contract AuctionBidder is PausableWithAccessControl, Caller, IAuctionBidder, IAu
   // │                                    Auction Participation                                     │
   // ================================================================================================
 
-  /// @inheritdoc IAuctionBidder
+  /// @notice Bids on the auction contract and optionally executes arbitrary pre-bid logic.
   /// @dev precondition - the contract must not be paused.
   /// @dev precondition - the caller must have the AUCTION_BIDDER_ROLE.
+  /// @param assetIn The address of the asset to bid with.
+  /// @param amount The amount of the asset to bid.
+  /// @param solution The list of calls to execute to solve the bid.
   function bid(
     address assetIn,
     uint256 amount,
@@ -207,6 +209,6 @@ contract AuctionBidder is PausableWithAccessControl, Caller, IAuctionBidder, IAu
   function supportsInterface(
     bytes4 interfaceId
   ) public view virtual override returns (bool) {
-    return interfaceId == type(IAuctionBidder).interfaceId || super.supportsInterface(interfaceId);
+    return interfaceId == type(IAuctionCallback).interfaceId || super.supportsInterface(interfaceId);
   }
 }

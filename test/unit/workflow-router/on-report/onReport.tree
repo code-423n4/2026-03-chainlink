@@ -1,0 +1,20 @@
+onReport.t.sol
+├─ given the contract is paused
+│  └─ it should revert
+└─ given the contract is not paused
+   ├─ when the caller does not have the FORWARDER_ROLE
+   │  └─ it should revert
+   └─ when the caller has the FORWARDER_ROLE
+      ├─ when the metadata's workflow id is zero
+      │  └─ it should revert
+      └─ when the metadata's workflow id is not zero
+         ├─ when the metadata's workflow ID is not allowlisted
+         │  └─ it should revert
+         └─ when the metadata's workflow ID is allowlisted
+            ├─ when the report's target is not allowlisted for the workflow ID
+            │  └─ it should revert
+            └─ when the report's target is allowlisted for the workflow ID
+               ├─ when the report's function selector is not allowlisted for the workflow ID and target
+               │  └─ it should revert
+               └─ when the report's function selector is allowlisted for the workflow ID and target
+                  └─ it should call the target with the selector and data

@@ -14,7 +14,7 @@
 
 1. While this audit's code is not yet deployed, a variation of the [live code rules](https://docs.code4rena.com/competitions/live-code-rules) will apply, where **all submissions will be treated as sensitive**:
    - Submissions will be hidden from all wardens (SR and non-SR alike) by default, to ensure that no sensitive issues are erroneously shared.
-   - Once the initial triage process has been completed, we’ll make submissions visible to [verified (KYC'ed) wardens](https://docs.code4rena.com/roles/certification-id-verification) only. PJQA will be open to verified wardens per the usual C4 process. 
+   - Once the initial triage process has been completed, we’ll make submissions visible to [verified (KYC'ed) wardens](https://docs.code4rena.com/roles/certification-id-verification) only. PJQA will be open to verified wardens per the usual C4 process.
 2. A coded, runnable PoC is required for all High/Medium submissions to this audit.
    - This repo includes a basic template to run the test suite.
    - PoCs must use the test suite provided in this repo.
@@ -74,43 +74,43 @@ _See [scope.txt](https://github.com/code-423n4/2026-03-chainlink/blob/main/scope
 
 ### Files in scope
 
-| File | nSLOC |
-| ------------------------------------ | -------- |
-| [src/AuctionBidder.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/AuctionBidder.sol) | 103 |
-| [src/BaseAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/BaseAuction.sol) | 420 |
-| [src/Caller.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/Caller.sol) | 33 |
-| [src/GPV2CompatibleAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/GPV2CompatibleAuction.sol) | 104 |
-| [src/PriceManager.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/PriceManager.sol) | 227 |
-| [src/WorkflowRouter.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/WorkflowRouter.sol) | 125 |
-| [src/interfaces/IAuctionBidder.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IAuctionBidder.sol) | 4 |
-| [src/interfaces/IAuctionCallback.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IAuctionCallback.sol) | 3 |
-| [src/interfaces/IBaseAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IBaseAuction.sol) | 3 |
-| [src/interfaces/IGPV2Settlement.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IGPV2Settlement.sol) | 6 |
-| [src/interfaces/IPriceManager.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IPriceManager.sol) | 3 |
-| [src/libraries/Errors.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/Errors.sol) | 15 |
-| [src/libraries/Roles.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/Roles.sol) | 15 |
-| **Totals** | **1061** |
+| File                                                                                                                                             | nSLOC    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| [src/AuctionBidder.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/AuctionBidder.sol)                                         | 103      |
+| [src/BaseAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/BaseAuction.sol)                                             | 420      |
+| [src/Caller.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/Caller.sol)                                                       | 33       |
+| [src/GPV2CompatibleAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/GPV2CompatibleAuction.sol)                         | 104      |
+| [src/PriceManager.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/PriceManager.sol)                                           | 227      |
+| [src/WorkflowRouter.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/WorkflowRouter.sol)                                       | 125      |
+| [src/interfaces/IAuctionCallback.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IAuctionCallback.sol)             | 3        |
+| [src/interfaces/IBaseAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IBaseAuction.sol)                     | 3        |
+| [src/interfaces/IGPV2CompatibleAuction.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IGPV2CompatibleAuction.sol) |          |
+| [src/interfaces/IGPV2Settlement.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IGPV2Settlement.sol)               | 6        |
+| [src/interfaces/IPriceManager.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IPriceManager.sol)                   | 3        |
+| [src/libraries/Errors.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/Errors.sol)                                   | 15       |
+| [src/libraries/Roles.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/Roles.sol)                                     | 15       |
+| **Totals**                                                                                                                                       | **1061** |
 
 ### Files out of scope
 
 _See [out_of_scope.txt](https://github.com/code-423n4/2026-03-chainlink/blob/main/out_of_scope.txt)_
 
-| File |
-| --- |
-| [src/EmergencyWithdrawer.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/EmergencyWithdrawer.sol) |
-| [src/FeeAggregator.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/FeeAggregator.sol) |
-| [src/LinkReceiver.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/LinkReceiver.sol) |
-| [src/NativeTokenReceiver.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/NativeTokenReceiver.sol) |
-| [src/PausableWithAccessControl.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/PausableWithAccessControl.sol) |
-| [src/interfaces/IFeeAggregator.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IFeeAggregator.sol) |
-| [src/interfaces/IFeeWithdrawer.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IFeeWithdrawer.sol) |
-| [src/interfaces/ILinkAvailable.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/ILinkAvailable.sol) |
-| [src/interfaces/IPausable.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IPausable.sol) |
-| [src/libraries/Common.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/Common.sol) |
+| File                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------- |
+| [src/EmergencyWithdrawer.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/EmergencyWithdrawer.sol)                   |
+| [src/FeeAggregator.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/FeeAggregator.sol)                               |
+| [src/LinkReceiver.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/LinkReceiver.sol)                                 |
+| [src/NativeTokenReceiver.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/NativeTokenReceiver.sol)                   |
+| [src/PausableWithAccessControl.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/PausableWithAccessControl.sol)       |
+| [src/interfaces/IFeeAggregator.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IFeeAggregator.sol)       |
+| [src/interfaces/IFeeWithdrawer.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IFeeWithdrawer.sol)       |
+| [src/interfaces/ILinkAvailable.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/ILinkAvailable.sol)       |
+| [src/interfaces/IPausable.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/interfaces/IPausable.sol)                 |
+| [src/libraries/Common.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/Common.sol)                         |
 | [src/libraries/EnumerableBytesSet.sol](https://github.com/code-423n4/2026-03-chainlink/blob/main/src/libraries/EnumerableBytesSet.sol) |
-| [src/vendor/\*\*.\*\*](https://github.com/code-423n4/2026-03-chainlink/tree/main/src/vendor) |
-| [test/\*\*.\*\*](https://github.com/code-423n4/2026-03-chainlink/tree/main/test) |
-| Totals: 72 |
+| [src/vendor/\*\*.\*\*](https://github.com/code-423n4/2026-03-chainlink/tree/main/src/vendor)                                           |
+| [test/\*\*.\*\*](https://github.com/code-423n4/2026-03-chainlink/tree/main/test)                                                       |
+| Totals: 72                                                                                                                             |
 
 # Additional context
 
@@ -139,6 +139,7 @@ _See [out_of_scope.txt](https://github.com/code-423n4/2026-03-chainlink/blob/mai
 | PRICE_ADMIN_ROLE    | Transmits Streams prices to the GPV2CompatibleAuction contract.                                                                                           | WorkflowRouter        |
 | AUCTION_WORKER_ROLE | Starts and expires auctions by calling performUpkeep on the GPV2CompatibleAuction contract.                                                               | WorkflowRouter        |
 | AUCTION_BIDDER_ROLE | Pushes solutions to the AuctionBidder’s bid function to solve live auctions.                                                                              | WorkflowRouter        |
+| ORDER_MANAGER_ROLE  | Invalidates orders on the GPv2Settlement contract.                                                                                                        | WorkflowRouter        |
 | FORWARDER_ROLE      | Transmits CRE workflow payloads to the WorkflowRouter’s onReport function.                                                                                | CRE forwarder         |
 
 ## Running tests

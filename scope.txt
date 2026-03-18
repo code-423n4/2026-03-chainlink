@@ -4,9 +4,9 @@
 ./src/GPV2CompatibleAuction.sol
 ./src/PriceManager.sol
 ./src/WorkflowRouter.sol
-./src/interfaces/IAuctionBidder.sol
 ./src/interfaces/IAuctionCallback.sol
 ./src/interfaces/IBaseAuction.sol
+./src/interfaces/IGPV2CompatibleAuction.sol
 ./src/interfaces/IGPV2Settlement.sol
 ./src/interfaces/IPriceManager.sol
 ./src/libraries/Errors.sol

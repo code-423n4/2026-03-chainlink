@@ -260,5 +260,43 @@ contract BaseAuction_PerformUpkeepIntegrationTest is BaseIntegrationTest, PriceM
     assertEq(s_baseAuction.getAuctionStart(address(s_mockUSDC)), 0);
     assertEq(IERC20(address(s_mockUSDC)).balanceOf(address(s_baseAuction)), 0);
     assertEq(IERC20(address(s_mockUSDC)).balanceOf(address(s_feeAggregator)), USDC_AUCTIONED_AMOUNT);
+  }function test_PoC_LinkReserveDrainedFromFeeAggregator()
+  external
+  performForAllContracts(CommonContracts.BASE_AUCTION)
+{
+  uint256 LINK_AMOUNT = 1000e18;
+
+  // 1. 將 LINK 放進 FeeAggregator（模擬 reserve）
+  deal(address(s_mockLINK), address(s_feeAggregator), LINK_AMOUNT);
+
+  // sanity check
+  assertEq(s_mockLINK.balanceOf(address(s_feeAggregator)), LINK_AMOUNT);
+
+  // 2. 跑 upkeep
+  _changePrank(i_auctionAdmin);
+  (bool upkeepNeeded, bytes memory performData) = s_baseAuction.checkUpkeep("");
+  assertTrue(upkeepNeeded);
+
+  // 3. decode eligible assets（確認 LINK 被當成 auction candidate）
+  (Common.AssetAmount[] memory assets,) =
+    abi.decode(performData, (Common.AssetAmount[], address[]));
+
+  bool foundLink = false;
+  for (uint256 i = 0; i < assets.length; i++) {
+    if (assets[i].asset == address(s_mockLINK)) {
+      foundLink = true;
+    }
   }
+
+  assertTrue(foundLink);
+
+  // 4. 執行 upkeep
+  s_baseAuction.performUpkeep(performData);
+
+  // 5. 驗證 LINK 被從 FeeAggregator 移走
+  assertEq(s_mockLINK.balanceOf(address(s_feeAggregator)), 0);
+
+  // 6. 驗證 LINK 被送到 reserves
+  assertGt(s_mockLINK.balanceOf(address(s_reserves)), 0);
+}
 }
